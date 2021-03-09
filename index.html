@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+</head>
+<body>
+<h1>Hello World</h1>
+<button id="start-btn">Start</button>
+<button id="stop-btn">stop</button>
+
+<div id="status-message"></div>
+</body>
+
+<script>
+
+    function updateStatus(statusMessage) {
+        document.getElementById("status-message").innerText = statusMessage;
+    }
+
+    function sendRequestToFlaskServer(status, successCallBack, errorCallBack) {
+        return fetch('http://127.0.0.1:5000/?status=' + status).then(function (response) {
+            // The API call was successful!
+            return response.json();
+        }).then(function (data) {
+            // This is the JSON from our response
+            console.log(data);
+            successCallBack(data)
+        }).catch(function (err) {
+            // There was an error
+            console.warn('Something went wrong.', err);
+            errorCallBack(err)
+        });
+    }
+
+    function successCallBack(response) {
+        console.log(response)
+        updateStatus(response.message);
+
+    }
+
+    function errorCallBack(response) {
+        updateStatus(response.message);
+
+    }
+
+    function startMachine() {
+         sendRequestToFlaskServer(1, successCallBack, errorCallBack);
+    }
+
+    function stopMachine() {
+         sendRequestToFlaskServer(0, successCallBack, errorCallBack);
+    }
+
+
+    document.getElementById("start-btn").onclick = function () {
+       startMachine();
+     }
+
+    document.getElementById("stop-btn").onclick = function () {
+       stopMachine();
+     }
+</script>
+</html>
